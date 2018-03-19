@@ -4,10 +4,14 @@
 </head>
 <body>
 
+  {% for message in get_flashed_messages() %}
+    <li>{{ message }}</li>
+  {% endfor %}
+
   <h1>Upload new PDF</h1>
-  <form method="POST" enctype="multipart/form-data">
-    <p><input type="file" name="file">
-      <input type="submit" value="Upload">
+  <form action="/upload-pdf" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file"><br>
+    <input type="submit" value="Upload"><br>
   </form>
 
 </body>

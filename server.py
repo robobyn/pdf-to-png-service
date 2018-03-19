@@ -11,6 +11,7 @@ ALLOWED_EXTENSIONS = set(["pdf"])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = os.environ["SECRET_KEY"]
 
 
 def allowed_file(filename):
@@ -21,9 +22,16 @@ def allowed_file(filename):
     return True if extension in ALLOWED_EXTENSIONS else False
 
 
+@app.route("/")
+def show_homepage():
+    """Render homepage template with file upload form."""
+
+    return render_template("home.html")
+
+
 @app.route("/upload-pdf", methods=["POST"])
 def upload_pdf():
-    """Accepts HTTP POST request containing PDF files - upload to S3 as PNG.
+    """Accepts HTTP POST request containing PDF files - convert to PNG.
 
     Returns URL manifest for each page of doc as PNG"""
 
@@ -31,20 +39,29 @@ def upload_pdf():
 
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
+            return redirect("/home")
 
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+        file = request.files['file']
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
+            url = url_for('uploaded_file', filename=filename)
+            print url
+            return redirect(url)
+
+        else:
+            flash("That's not a PDF, you hacker!")
+            return redirect("/")
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    """Display uploaded file."""
+
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 if __name__ == "__main__":
 
-    app.run(port=5000, host="0.0.0.0")
+    app.run(port=8000, host="0.0.0.0")
