@@ -39,21 +39,18 @@ def upload_pdf():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(filename)
-            print filename
 
             converted_img = Image(filename=str(filename)).convert("png")
             converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
                                "{}.png".format(filename[:-4])))
 
             url_manifest = []
-            print len(converted_img.sequence)
 
             if len(converted_img.sequence) > 1:
                 for i in range(len(converted_img.sequence)):
 
                     url = url_for('uploaded_file', filename="{}-{}.png".format(
                         filename[:-4], i))
-                    print url
                     url_manifest.append(url)
 
                 return jsonify(url_manifest)
