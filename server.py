@@ -1,9 +1,8 @@
-from flask import Flask, request, redirect, url_for, send_from_directory, flash
-from flask import render_template, jsonify
+from flask import Flask, request, url_for, send_from_directory
+from flask import jsonify
 from werkzeug.utils import secure_filename
 from wand.image import Image
 import os
-import requests
 
 UPLOAD_FOLDER = "static/uploads"  # change this to path
 ALLOWED_EXTENSIONS = set(["pdf"])
@@ -22,13 +21,6 @@ def allowed_file(filename):
     return True if extension in ALLOWED_EXTENSIONS else False
 
 
-@app.route("/")
-def show_homepage():
-    """Render homepage template with file upload form."""
-
-    return render_template("home.html")
-
-
 @app.route("/upload-pdf", methods=["POST"])
 def upload_pdf():
     """Accepts HTTP POST request containing PDF files - convert to PNG.
@@ -40,8 +32,7 @@ def upload_pdf():
     if request.method == 'POST':
 
         if 'file' not in request.files:
-            flash('No file part')
-            return redirect("/home")
+            return jsonify("No file submitted")
 
         file = request.files['file']
 
@@ -73,8 +64,7 @@ def upload_pdf():
                 return jsonify([url])
 
         else:
-            flash("That's not a PDF, you hacker!")
-            return redirect("/")
+            return jsonify("/upload-pdf route accepts only .pdf file format.")
 
 
 @app.route('/uploads/<filename>')
