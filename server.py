@@ -27,8 +27,6 @@ def upload_pdf():
 
     Returns URL manifest for each page of doc as PNG"""
 
-    print request
-
     if request.method == 'POST':
 
         if 'file' not in request.files:
