@@ -35,6 +35,8 @@ def upload_pdf():
 
     Returns URL manifest for each page of doc as PNG"""
 
+    print request
+
     if request.method == 'POST':
 
         if 'file' not in request.files:
@@ -53,8 +55,9 @@ def upload_pdf():
                                "{}.png".format(filename[:-4])))
 
             url_manifest = []
+            print len(converted_img.sequence)
 
-            if converted_img.sequence:
+            if len(converted_img.sequence) > 1:
                 for i in range(len(converted_img.sequence)):
 
                     url = url_for('uploaded_file', filename="{}-{}.png".format(
@@ -67,7 +70,7 @@ def upload_pdf():
             else:
                 url = url_for('uploaded_file', filename="{}.png".format(
                               filename[:-4]))
-                return jsonify(url)
+                return jsonify([url])
 
         else:
             flash("That's not a PDF, you hacker!")
