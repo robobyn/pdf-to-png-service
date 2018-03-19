@@ -1,3 +1,5 @@
 env
 secret*
 *.pdf
+*.png
+.DS_Store

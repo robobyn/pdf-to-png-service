@@ -1,8 +1,8 @@
 from flask import Flask, request, redirect, url_for, send_from_directory, flash
-from flask import render_template
+from flask import render_template, jsonify
 from werkzeug.utils import secure_filename
+from wand.image import Image
 import os
-import boto3
 import requests
 
 UPLOAD_FOLDER = "static/uploads"  # change this to path
@@ -45,10 +45,29 @@ def upload_pdf():
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            url = url_for('uploaded_file', filename=filename)
-            print url
-            return redirect(url)
+            file.save(filename)
+            print filename
+
+            converted_img = Image(filename=str(filename)).convert("png")
+            converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
+                               "{}.png".format(filename[:-4])))
+
+            url_manifest = []
+
+            if converted_img.sequence:
+                for i in range(len(converted_img.sequence)):
+
+                    url = url_for('uploaded_file', filename="{}-{}.png".format(
+                        filename[:-4], i))
+                    print url
+                    url_manifest.append(url)
+
+                return jsonify(url_manifest)
+
+            else:
+                url = url_for('uploaded_file', filename="{}.png".format(
+                              filename[:-4]))
+                return jsonify(url)
 
         else:
             flash("That's not a PDF, you hacker!")
