@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from wand.image import Image
 import os
 
-UPLOAD_FOLDER = "static/uploads"  # change this to path
+UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = set(["pdf"])
 
 
@@ -41,6 +41,7 @@ def upload_pdf():
             converted_img = Image(filename=str(filename)).convert("png")
             converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
                                "{}.png".format(filename[:-4])))
+            os.remove(filename)
 
             url_manifest = []
 
