@@ -1,24 +1,17 @@
-from flask import Flask, request, url_for, send_from_directory
+from flask import Flask, request, send_from_directory
 from flask import jsonify
 from werkzeug.utils import secure_filename
-from wand.image import Image
 import os
+from image_conversion import allowed_file, get_url_manifest
+from wand.image import Image
+
 
 UPLOAD_FOLDER = "static/uploads"
-ALLOWED_EXTENSIONS = set(["pdf"])
 
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.environ["SECRET_KEY"]
-
-
-def allowed_file(filename):
-    """Return boolean for whether or not file is allowable format."""
-
-    extension = filename.split(".")[-1]
-
-    return True if extension in ALLOWED_EXTENSIONS else False
 
 
 @app.route("/upload-pdf", methods=["POST"])
@@ -33,9 +26,10 @@ def upload_pdf():
             return jsonify("No file submitted")
 
         file = request.files['file']
+        filename = secure_filename(file.filename)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        if file and allowed_file(filename):
+
             file.save(filename)
 
             converted_img = Image(filename=str(filename)).convert("png")
@@ -43,21 +37,7 @@ def upload_pdf():
                                "{}.png".format(filename[:-4])))
             os.remove(filename)
 
-            url_manifest = []
-
-            if len(converted_img.sequence) > 1:
-                for i in range(len(converted_img.sequence)):
-
-                    url = url_for('uploaded_file', filename="{}-{}.png".format(
-                        filename[:-4], i))
-                    url_manifest.append(url)
-
-                return jsonify(url_manifest)
-
-            else:
-                url = url_for('uploaded_file', filename="{}.png".format(
-                              filename[:-4]))
-                return jsonify([url])
+            return get_url_manifest(converted_img, filename)
 
         else:
             return jsonify("/upload-pdf route accepts only .pdf file format.")
