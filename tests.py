@@ -1,5 +1,6 @@
 from unittest import TestCase
 from server import app
+from io import FileIO
 
 
 class FlaskTestsServer(TestCase):
@@ -13,11 +14,31 @@ class FlaskTestsServer(TestCase):
         app.config["SECRET_KEY"] = "key"
 
     def test_no_file(self):
-        """Test /upload-pdf route for single page pdf."""
+        """Test /upload-pdf route with no file submitted."""
 
         result = self.client.post("/upload-pdf")
 
         self.assertIn("No file submitted", result.data)
+
+    def test_single_page_pdf(self):
+        """Test /upload-pdf route for single page pdf."""
+
+        data = {"file": FileIO("test_singlepage.pdf")}
+        result = self.client.post("/upload-pdf",
+                                  content_type="multipart/form-data",
+                                  data=data)
+
+        self.assertIn("/uploads/test_singlepage.png", result.data)
+
+    def test_multipage_pdf(self):
+        """Test /upload-pdf route for multi page pdf."""
+
+        data = {"file": FileIO("test_multipage.pdf")}
+        result = self.client.post("/upload-pdf",
+                                  content_type="multipart/form-data",
+                                  data=data)
+
+        self.assertIn("/uploads/test_multipage-1.png", result.data)
 
 
 if __name__ == "__main__":
