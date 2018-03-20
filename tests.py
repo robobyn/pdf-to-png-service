@@ -1,3 +1,7 @@
+"""To run the tests, you will need to move test documents into the pdf-to-png
+directory. The tests require a single page PDF named test_singlepage.pdf, a
+multi-page PDF named test_multipage.pdf, and a JPG named test_nonpdf.jpg."""
+
 from unittest import TestCase
 from server import app
 from io import FileIO
