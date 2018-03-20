@@ -3,3 +3,5 @@ secret*
 *.pdf
 *.png
 .DS_Store
+*.jpg
+*.pyc
