@@ -44,6 +44,9 @@ Install Flask and Wand using pip:
 $ pip install -r requirements.txt
 ```
 
+Flask requires a secret key to run this application.  Create an environmental
+variable called ```SECRET_KEY```.  Use a string of your choosing as the key.
+
 ## Getting Started
 
 Download files from Github
