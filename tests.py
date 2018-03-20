@@ -40,6 +40,17 @@ class FlaskTestsServer(TestCase):
 
         self.assertIn("/uploads/test_multipage-1.png", result.data)
 
+    def test_wrong_file_type(self):
+        """Test /upload-pdf route for non-pdf file upload."""
+
+        data = {"file": FileIO("test_nonpdf.jpg")}
+        result = self.client.post("/upload-pdf",
+                                  content_type="multipart/form-data",
+                                  data=data)
+
+        self.assertIn("/upload-pdf route accepts only .pdf file format.",
+                      result.data)
+
 
 if __name__ == "__main__":
     import unittest
