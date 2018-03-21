@@ -1,29 +1,13 @@
-import os
 from flask import jsonify
-from wand.image import Image
-from werkzeug.utils import secure_filename
-
-ALLOWED_EXTENSIONS = set(["pdf"])
 
 
 def allowed_file(filename):
     """Return boolean for whether or not file is allowable format."""
 
+    allowed_extensions = set(["pdf"])
     extension = filename.split(".")[-1]
 
-    return True if extension in ALLOWED_EXTENSIONS else False
-
-
-def convert_to_png(file, filename):
-    """Return file converted from PDF to PNG."""
-
-    file.save(filename)
-
-    converted_img = Image(filename=str(filename)).convert("png")
-    converted_img.save(filename="/static/uploads/{}.png".format(filename[:-4]))
-    os.remove(filename)
-
-    return converted_img
+    return True if extension in allowed_extensions else False
 
 
 def get_url_manifest(converted_img, filename):
