@@ -6,7 +6,7 @@ PDF to PNG is an HTTP service that:
 images of the pages of the PDF
 * Responds to GET requests for those URLs with the PNG image requested
 
-### Prerequisites
+## Prerequisites
 
 Program written in Python 2.7 using Flask framework version 0.12.2.  This service
 uses Wand version 0.4.4, a Python wrapper for ImageMagick, to convert PDF files to
@@ -24,6 +24,12 @@ To work with PDF files, ImageMagick depends on GhostScript.
 $ brew install ghostscript
 ```
 
+Aditionally, this program uses python-magic, a wrapper to libmagic to identify file types.  Install libmagic using Homebrew.
+
+```
+$ brew install libmagic
+```
+
 Following these two installs, it is adviseable to use a virtual environment to
 install the remaining requirements via pip.
 
@@ -38,7 +44,7 @@ $ virtualenv env
 $ source env/bin/activate
 ```
 
-Install Flask and Wand using pip:
+Install Flask, python-magic and Wand and other dependencies using pip:
 
 ```
 $ pip install -r requirements.txt
