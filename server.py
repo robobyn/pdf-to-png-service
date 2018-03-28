@@ -20,27 +20,28 @@ def upload_pdf():
 
     Returns URL manifest for each page of doc as PNG"""
 
-    if request.method == 'POST':
+    if 'file' not in request.files:
+        return jsonify("No file submitted")
 
-        if 'file' not in request.files:
-            return jsonify("No file submitted")
+    file = request.files['file']
+    filename = secure_filename(file.filename)
 
-        file = request.files['file']
-        filename = secure_filename(file.filename)
+    if file and allowed_file(file, filename):
 
-        if file and allowed_file(filename):
+        # ImageMagick requires PDF to exist in current directory
+        # prior to converting file to PNG
+        file.save(filename)
 
-            file.save(filename)
+        converted_img = Image(filename=str(filename)).convert("png")
+        converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
+                           "{}.png".format(filename[:-4])))
+        # Remove temporarily saved PDF after converting to PNG
+        # os.remove(filename)
 
-            converted_img = Image(filename=str(filename)).convert("png")
-            converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
-                               "{}.png".format(filename[:-4])))
-            os.remove(filename)
+        return get_url_manifest(converted_img, filename)
 
-            return get_url_manifest(converted_img, filename)
-
-        else:
-            return jsonify("/upload-pdf route accepts only .pdf file format.")
+    else:
+        return jsonify("/upload-pdf route accepts only PDF file format.")
 
 
 @app.route('/uploads/<filename>')

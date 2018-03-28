@@ -1,13 +1,13 @@
 from flask import jsonify
+import magic
 
 
-def allowed_file(filename):
+def allowed_file(file, filename):
     """Return boolean for whether or not file is allowable format."""
 
-    allowed_extensions = set(["pdf"])
-    extension = filename.split(".")[-1]
+    file_type = magic.from_file(filename)
 
-    return True if extension in allowed_extensions else False
+    return True if "PDF document" in file_type else False
 
 
 def get_url_manifest(converted_img, filename):

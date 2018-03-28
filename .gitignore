@@ -5,3 +5,4 @@ secret*
 .DS_Store
 *.jpg
 *.pyc
+.coverage
