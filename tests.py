@@ -52,7 +52,7 @@ class FlaskTestsServer(TestCase):
                                   content_type="multipart/form-data",
                                   data=data)
 
-        self.assertIn("/upload-pdf route accepts only .pdf file format.",
+        self.assertIn("/upload-pdf route accepts only PDF file format.",
                       result.data)
 
 

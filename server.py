@@ -31,12 +31,13 @@ def upload_pdf():
         # ImageMagick requires PDF to exist in current directory
         # prior to converting file to PNG
         file.save(filename)
+        new_filename = filename.split(".")[0]
 
         converted_img = Image(filename=str(filename)).convert("png")
         converted_img.save(filename=os.path.join(app.config['UPLOAD_FOLDER'],
-                           "{}.png".format(filename[:-4])))
+                           "{}.png".format(new_filename)))
         # Remove temporarily saved PDF after converting to PNG
-        # os.remove(filename)
+        os.remove(filename)
 
         return get_url_manifest(converted_img, filename)
 
